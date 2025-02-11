@@ -7,6 +7,9 @@ class Cliente extends CI_Controller
 	public function __construct()
 	{
 		parent::__construct();
+		$this->load->model('Pedido_model'); // Carrega o modelo
+		//$this->load->helper('url'); // Carrega o helper de URL
+		//$this->load->library('session'); // Biblioteca de sessão
 		$this->load->model('Produto_model');
 		$this->load->library('cart');
 		$this->load->library('template'); //Carrega a biblioteca de template
@@ -111,7 +114,7 @@ class Cliente extends CI_Controller
 		$cart = $this->cart->contents();
 
 		if (empty($cart)) {
-			echo '<p class="text-center">Carrinho vazio.</p>';
+			echo '<p class="text-center">' . htmlspecialchars('Carrinho vazio.') . '</p>';
 			return;
 		}
 
