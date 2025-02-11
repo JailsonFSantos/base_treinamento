@@ -29,37 +29,7 @@
                 carregarCarrinho();
                 $('#modalCarrinho').modal('show');
             });
-
-            // 🛍️ Função de adicionar produto ao carrinho
-            $(document).on('click', '.add-to-cart', function() {
-                let id_produto = $(this).data('id');
-                let quantidade = 1; // ou qualquer valor desejado
-
-                $.ajax({
-                    url: 'cliente/comprar_produto',
-                    type: 'POST',
-                    data: {
-                        id_produto: id_produto,
-                        quantidade: quantidade
-                    },
-                    dataType: 'json',
-                    success: function(response) {
-                        if (response.success) {
-                            $('#quantidade_carrinho').text(response.cart_count); // Atualiza o ícone do carrinho
-
-                            // Verifica se há redirecionamento
-                            if (response.redirect_url) {
-                                window.location.href = response.redirect_url; // Redireciona para a página de compra
-                            }
-                        } else {
-                            alert(response.message); // Exibe mensagem de erro
-                        }
-                    },
-                    error: function() {
-                        alert('Erro ao adicionar produto ao carrinho!');
-                    }
-                });
-            });
+            
 
             // 🔄 Atualizar a quantidade de um item no carrinho
             $(document).on('change', '.update-cart', function() {
@@ -191,7 +161,7 @@
                     </ul>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-default" data-dismiss="modal">Fechar</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Continuar Comprando</button>
                     <a href="cliente/checkout" class="btn btn-success">Finalizar Compra</a>
                 </div>
             </div>

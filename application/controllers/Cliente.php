@@ -9,19 +9,14 @@ class Cliente extends CI_Controller
 		parent::__construct();
 		$this->load->model('Produto_model');
 		$this->load->library('cart');
+		$this->load->library('template'); //Carrega a biblioteca de template
 	}
 
 	public function index()
 	{
 		$id_usuario = $this->session->userdata('id_usuario');
 		$data['produtos'] = $this->Produto_model->get_all_products();
-		$data['tipo_acesso'] = $this->session->userdata('tipo_acesso');
-		$data['homeUrl'] = '/';
-		$data['nome_usuario'] = $this->session->userdata('nome_usuario');
-
-		$data['conteudo'] = $this->load->view('clientePaginaPrincipal', $data, TRUE);
-
-		$this->load->view('template/index', $data);
+		$this->template->load('clientePaginaPrincipal', $data);
 	}
 
 	public function comprar_produto()
@@ -129,5 +124,40 @@ class Cliente extends CI_Controller
                 <button class="btn btn-danger btn-xs remove-cart-item" data-id="' . $item['id'] . '">Remover</button>
               </li>';
 		}
+	}
+	public function checkout()
+	{
+		$data['cart_items'] = $this->cart->contents(); // Obtém os itens do carrinho
+
+		if (empty($data['cart_items'])) {
+			$data['mensagem'] = "Seu carrinho está vazio!";
+		}
+
+		$this->template->load('clienteCheckout', $data); // Carrega a página de checkout
+	}
+
+	public function finalizar_pedido()
+	{
+		if (empty($this->cart->contents())) {
+			redirect('cliente/checkout');
+			return;
+		}
+
+		$id_carrinho = rand(1000, 9999); // Simulando um ID de carrinho
+		$id_cupom = NULL; // Se houver cupons, pode ser atualizado
+
+		foreach ($this->cart->contents() as $item) {
+			$venda_data = [
+				'id_carrinho' => $id_carrinho,
+				'id_cupom' => $id_cupom,
+				'data_venda' => date('Y-m-d H:i:s')
+			];
+
+			$this->db->insert('venda', $venda_data);
+		}
+
+		$this->cart->destroy(); // Esvazia o carrinho
+
+		redirect('cliente/checkout?status=success');
 	}
 }
