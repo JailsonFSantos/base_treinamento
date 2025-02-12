@@ -11,12 +11,15 @@
                 </tr>
             </thead>
             <tbody>
+                <?php 
+                date_default_timezone_set('America/Sao_Paulo');
+                $dataLocal = date('d/m/Y H:i:s', time());
+                 ?>
                 <?php foreach ($pedidos as $venda): ?>
                     <tr>
                         <td><?= htmlspecialchars($venda['id_venda']); ?></td>
-                        <td><?= date('Y/m/d H:i', strtotime($venda['data_venda'])); ?></td>
-                        <td>R$ <?= number_format($venda['total'], 2, ',', '.'); ?></td> <!-- Corrigido -->
-                    </tr>
+                        <td><?= date('d/m/Y H:i', strtotime($venda['data_venda'])); ?></td>
+                        <td>R$ <?= number_format($venda['total'], 2, ',', '.'); ?></td>
                 <?php endforeach; ?>
             </tbody>
         </table>

@@ -13,10 +13,10 @@ class Pedido_model extends CI_Model
     public function get_pedidos_por_cliente($id_usuario)
     {
         $this->db->select('
-        venda.id_venda, 
-        venda.data_venda, 
-        SUM(carrinho_item.preco_unitario * carrinho_item.quantidade) as total
-    ');
+            venda.id_venda, 
+            venda.data_venda, 
+            SUM(carrinho_item.preco_unitario * carrinho_item.quantidade) as total
+        ');
         $this->db->from('venda');
         $this->db->join('carrinho', 'venda.id_carrinho = carrinho.id_carrinho');
         $this->db->join('carrinho_item', 'carrinho.id_carrinho = carrinho_item.id_carrinho');
@@ -24,8 +24,7 @@ class Pedido_model extends CI_Model
         $this->db->group_by('venda.id_venda'); // Agrupar por id_venda
         $this->db->order_by('venda.data_venda', 'DESC');
 
-        $query = $this->db->get();
-        return $query->result_array();
+        return  $this->db->get()->result_array();
     }
 
     // Obtém os detalhes de um pedido específico
@@ -39,8 +38,7 @@ class Pedido_model extends CI_Model
         $this->db->where('venda.id_venda', $id_venda);
         $this->db->where('carrinho.id_usuario', $id_usuario);
 
-        $query = $this->db->get();
-        return $query->result_array();
+        $this->db->get()->result_array();
     }
     public function registrar_venda($id_usuario, $id_cupom = null)
     {
