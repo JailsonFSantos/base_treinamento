@@ -6,19 +6,24 @@ class Pedido_model extends CI_Model
     public function __construct()
     {
         parent::__construct();
-        $this->load->database(); // Carrega o banco de dados
+        $this->load->database();
     }
 
     // Obtém todos os pedidos do cliente logado
+
     public function get_pedidos_por_cliente($id_usuario)
     {
-        $this->db->select('venda.id_venda, venda.data_venda, SUM(produto.preco * carrinho_item.quantidade) as total');
+        $this->db->select('
+        venda.id_venda, 
+        venda.data_venda, 
+        (SELECT SUM(produto.preco * carrinho_item.quantidade) 
+         FROM carrinho_item 
+         JOIN produto ON carrinho_item.id_produto = produto.id_produto 
+         WHERE carrinho_item.id_carrinho = venda.id_carrinho) as total
+    ');
         $this->db->from('venda');
         $this->db->join('carrinho', 'venda.id_carrinho = carrinho.id_carrinho');
-        $this->db->join('carrinho_item', 'carrinho.id_carrinho = carrinho_item.id_carrinho');
-        $this->db->join('produto', 'carrinho_item.id_produto = produto.id_produto');
         $this->db->where('carrinho.id_usuario', $id_usuario);
-        $this->db->group_by('venda.id_venda');
         $this->db->order_by('venda.data_venda', 'DESC');
 
         $query = $this->db->get();
@@ -41,12 +46,12 @@ class Pedido_model extends CI_Model
     }
     public function registrar_venda($id_usuario, $id_cupom = null)
     {
-        // Obtém o carrinho do usuário
+
         $this->db->where('id_usuario', $id_usuario);
         $carrinho = $this->db->get('carrinho')->row();
 
         if (!$carrinho) {
-            return false; // Se não houver carrinho, não faz a venda
+            return false;
         }
 
         $dados_venda = [
@@ -57,6 +62,6 @@ class Pedido_model extends CI_Model
 
         // Insere a venda no banco
         $this->db->insert('venda', $dados_venda);
-        return $this->db->insert_id(); // Retorna o ID da venda criada
+        return $this->db->insert_id();
     }
 }

@@ -37,33 +37,38 @@
     <?php endif; ?>
 </div>
 
-<!-- Adicionar o script JavaScript ao final da página -->
+
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
 $(document).ready(function () {
-    // Função para adicionar produto ao carrinho via AJAX
     $(document).on('click', '.add-to-cart', function () {
-        var id_produto = $(this).data('id');  // Obtém o id do produto
-        var quantidade = $('#quantidade_' + id_produto).val(); // Obtém a quantidade do input
+        var id_produto = $(this).data('id');  
+        var quantidade = $('#quantidade_' + id_produto).val(); 
 
         if (!id_produto || !quantidade) {
             alert("ID do produto ou quantidade ausente!");
-            return;  // Interrompe o processo caso algum parâmetro esteja faltando
+            return;  
         }
 
         $.ajax({
-            url: 'cliente/comprar_produto',  // Rota para o método no controlador
+            url: 'cliente/comprar_produto',  
             type: 'POST',
             data: { id_produto: id_produto, quantidade: quantidade },
             dataType: 'json',
             success: function (response) {
                 if (response.success) {
                     $('#quantidade_carrinho').text(response.cart_count); // Atualiza o ícone do carrinho
-                    alert(response.message); // Mensagem de sucesso
+                    
+                    alert(response.message); 
                 } else {
-                    alert(response.message); // Mensagem de erro
+                    alert(response.message); 
                 }
             },
+
+
+
+
+
             error: function () {
                 alert('Erro ao adicionar produto ao carrinho!');
             }

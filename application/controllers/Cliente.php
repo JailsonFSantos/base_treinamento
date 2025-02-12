@@ -7,12 +7,12 @@ class Cliente extends CI_Controller
 	public function __construct()
 	{
 		parent::__construct();
-		$this->load->model('Pedido_model'); // Carrega o modelo
+		$this->load->model('Pedido_model');
 		//$this->load->helper('url'); // Carrega o helper de URL
 		//$this->load->library('session'); // Biblioteca de sessão
 		$this->load->model('Produto_model');
 		$this->load->library('cart');
-		$this->load->library('template'); //Carrega a biblioteca de template
+		$this->load->library('template');
 	}
 
 	public function index()
@@ -130,13 +130,13 @@ class Cliente extends CI_Controller
 	}
 	public function checkout()
 	{
-		$data['cart_items'] = $this->cart->contents(); // Obtém os itens do carrinho
+		$data['cart_items'] = $this->cart->contents();
 
 		if (empty($data['cart_items'])) {
 			$data['mensagem'] = "Seu carrinho está vazio!";
 		}
 
-		$this->template->load('clienteCheckout', $data); // Carrega a página de checkout
+		$this->template->load('clienteCheckout', $data);
 	}
 
 	public function finalizar_pedido()
@@ -146,21 +146,78 @@ class Cliente extends CI_Controller
 			return;
 		}
 
-		$id_carrinho = rand(1000, 9999); // Simulando um ID de carrinho
-		$id_cupom = NULL; // Se houver cupons, pode ser atualizado
+		$id_usuario = $this->session->userdata('id_usuario'); // Obtém o ID do usuário logado
+		$id_cupom = NULL;
 
-		foreach ($this->cart->contents() as $item) {
-			$venda_data = [
-				'id_carrinho' => $id_carrinho,
-				'id_cupom' => $id_cupom,
-				'data_venda' => date('Y-m-d H:i:s')
+		$this->db->where('id_usuario', $id_usuario);
+		$carrinho = $this->db->get('carrinho')->row();
+
+		if (!$carrinho) {
+			$carrinho_data = [
+				'id_usuario' => $id_usuario
 			];
-
-			$this->db->insert('venda', $venda_data);
+			$this->db->insert('carrinho', $carrinho_data);
+			$id_carrinho = $this->db->insert_id();
+		} else {
+			$id_carrinho = $carrinho->id_carrinho;
 		}
 
-		$this->cart->destroy(); // Esvazia o carrinho
+
+		$venda_data = [
+			'id_carrinho' => $id_carrinho,
+			'id_cupom'    => $id_cupom,
+			'data_venda'  => date('Y-m-d H:i:s')
+		];
+
+		$this->db->insert('venda', $venda_data);
+		$id_venda = $this->db->insert_id();
+
+		// Insere os itens no carrinho_item
+		foreach ($this->cart->contents() as $item) {
+			$carrinho_item = [
+				'id_carrinho' => $id_carrinho,
+				'id_produto'  => $item['id'],
+				'quantidade'  => $item['qty']
+			];
+			$this->db->insert('carrinho_item', $carrinho_item);
+		}
+
+		$this->cart->destroy();
 
 		redirect('cliente/checkout?status=success');
+	}
+
+
+	//public function pedidos()
+	//{
+	//	$data['cart_items'] = $this->cart->contents();
+
+	//	if (empty($data['cart_items'])) {
+	//		$data['mensagem'] = "Seu carrinho está vazio!";
+	//	}
+
+	//	$this->template->load('clientePedido', $data);
+	//}
+
+	public function pedidos()
+	{
+		$id_usuario = $this->session->userdata('id_usuario');
+
+		if (!$id_usuario) {
+			redirect('cliente/login'); 
+			return;
+		}
+
+		// Carrega o model e obtém os pedidos do usuário
+		$this->load->model('pedido_model');
+		$data['pedidos'] = $this->pedido_model->get_pedidos_por_cliente($id_usuario);
+
+		if (empty($data['pedidos'])) {
+			log_message('debug', 'Nenhum pedido encontrado para o usuário ID: ' . $id_usuario);
+		} else {
+			log_message('debug', 'Pedidos carregados para o usuário ID: ' . $id_usuario);
+		}
+
+		$this->template->load('clientePedido', $data);
 	}
 }
