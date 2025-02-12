@@ -149,19 +149,12 @@ class Cliente extends CI_Controller
 		$id_usuario = $this->session->userdata('id_usuario'); // Obtém o ID do usuário logado
 		$id_cupom = NULL;
 
-		$this->db->where('id_usuario', $id_usuario);
-		$carrinho = $this->db->get('carrinho')->row();
-
-		if (!$carrinho) {
-			$carrinho_data = [
-				'id_usuario' => $id_usuario
-			];
-			$this->db->insert('carrinho', $carrinho_data);
-			$id_carrinho = $this->db->insert_id();
-		} else {
-			$id_carrinho = $carrinho->id_carrinho;
-		}
-
+		// Criar um novo carrinho para a nova compra
+		$carrinho_data = [
+			'id_usuario' => $id_usuario
+		];
+		$this->db->insert('carrinho', $carrinho_data);
+		$id_carrinho = $this->db->insert_id();
 
 		$venda_data = [
 			'id_carrinho' => $id_carrinho,
@@ -172,13 +165,17 @@ class Cliente extends CI_Controller
 		$this->db->insert('venda', $venda_data);
 		$id_venda = $this->db->insert_id();
 
-		// Insere os itens no carrinho_item
 		foreach ($this->cart->contents() as $item) {
+			$produto = $this->db->get_where('produto', ['id_produto' => $item['id']])->row();
+			$preco_unitario = $produto->preco;
+
 			$carrinho_item = [
 				'id_carrinho' => $id_carrinho,
 				'id_produto'  => $item['id'],
-				'quantidade'  => $item['qty']
+				'quantidade'  => $item['qty'],
+				'preco_unitario' => $preco_unitario  // Inclui o preço unitário
 			];
+
 			$this->db->insert('carrinho_item', $carrinho_item);
 		}
 
@@ -186,6 +183,8 @@ class Cliente extends CI_Controller
 
 		redirect('cliente/checkout?status=success');
 	}
+
+
 
 
 	//public function pedidos()
@@ -204,7 +203,7 @@ class Cliente extends CI_Controller
 		$id_usuario = $this->session->userdata('id_usuario');
 
 		if (!$id_usuario) {
-			redirect('cliente/login'); 
+			redirect('cliente/login');
 			return;
 		}
 

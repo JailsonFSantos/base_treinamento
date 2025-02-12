@@ -15,7 +15,7 @@
                     <tr>
                         <td><?= htmlspecialchars($venda['id_venda']); ?></td>
                         <td><?= date('Y/m/d H:i', strtotime($venda['data_venda'])); ?></td>
-                        <td>R$ <?= number_format($venda['total']); ?></td>
+                        <td>R$ <?= number_format($venda['total'], 2, ',', '.'); ?></td> <!-- Corrigido -->
                     </tr>
                 <?php endforeach; ?>
             </tbody>

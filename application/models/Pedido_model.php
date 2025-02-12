@@ -15,14 +15,13 @@ class Pedido_model extends CI_Model
         $this->db->select('
         venda.id_venda, 
         venda.data_venda, 
-        (SELECT SUM(produto.preco * carrinho_item.quantidade) 
-         FROM carrinho_item 
-         JOIN produto ON carrinho_item.id_produto = produto.id_produto 
-         WHERE carrinho_item.id_carrinho = venda.id_carrinho) as total
+        SUM(carrinho_item.preco_unitario * carrinho_item.quantidade) as total
     ');
         $this->db->from('venda');
         $this->db->join('carrinho', 'venda.id_carrinho = carrinho.id_carrinho');
+        $this->db->join('carrinho_item', 'carrinho.id_carrinho = carrinho_item.id_carrinho');
         $this->db->where('carrinho.id_usuario', $id_usuario);
+        $this->db->group_by('venda.id_venda'); // Agrupar por id_venda
         $this->db->order_by('venda.data_venda', 'DESC');
 
         $query = $this->db->get();
