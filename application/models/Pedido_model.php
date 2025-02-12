@@ -9,8 +9,7 @@ class Pedido_model extends CI_Model
         $this->load->database();
     }
 
-    // Obtém todos os pedidos do cliente logado
-
+    // Obtém todos os pedidos do cliente
     public function get_pedidos_por_cliente($id_usuario)
     {
         $this->db->select('
