@@ -218,4 +218,24 @@ class Cliente extends CI_Controller
 
 		$this->template->load('clientePedido', $data);
 	}
+	public function vendasDetalhadas($id_venda)
+	{
+		$id_usuario = $this->session->userdata('id_usuario');
+		if (!$id_usuario) {
+			redirect('cliente/login');
+			return;
+		}
+
+		$this->load->model('pedido_model');
+
+		$data['pedidos'] = $this->pedido_model->get_detalhes_pedido($id_venda, $id_usuario, true);
+
+		if (empty($data['pedidos'])) {
+			log_message('debug', 'Nenhuma venda encontrada no período.');
+		} else {
+			log_message('debug', 'Detalhe carregado com sucesso.');
+		}
+
+		$this->template->load('clientePedidoDetalhes', $data);
+	}
 }

@@ -113,7 +113,7 @@ class Loja extends CI_Controller
 
 		$this->load->model('pedido_model');
 
-		$data['pedidos'] = $this->pedido_model->get_vendas_loja($data_inicio, $data_fim);
+		$data['pedidos'] = $this->pedido_model->get_vendas_com_lucro($data_inicio, $data_fim);
 
 		if (empty($data['pedidos'])) {
 			log_message('debug', 'Nenhuma venda encontrada no período.');
@@ -134,7 +134,7 @@ class Loja extends CI_Controller
 
 		$this->load->model('pedido_model');
 
-		$data['pedidos'] = $this->pedido_model->get_detalhes_pedido($id_venda, $id_usuario);
+		$data['pedidos'] = $this->pedido_model->get_detalhes_pedido($id_venda, $id_usuario, true);
 
 		if (empty($data['pedidos'])) {
 			log_message('debug', 'Nenhuma venda encontrada no período.');

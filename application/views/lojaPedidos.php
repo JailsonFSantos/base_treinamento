@@ -22,6 +22,7 @@
                     <th>Número do Pedido</th>
                     <th>Data</th>
                     <th>Valor</th>
+                    <th>Lucro</th> <!-- Coluna para o lucro -->
                 </tr>
             </thead>
             <tbody>
@@ -30,6 +31,7 @@
                         <td><?= htmlspecialchars($venda['id_venda']); ?></td>
                         <td><?= date('d/m/Y H:i', strtotime($venda['data_venda'])); ?></td>
                         <td>R$ <?= number_format($venda['total'], 2, ',', '.'); ?></td>
+                        <td>R$ <?= number_format($venda['lucro_total'], 2, ',', '.'); ?></td> 
                         <td><a href="<?= base_url('loja/vendas/detalhes/' . $venda['id_venda']) ?>" class="btn btn-default">Detalhes</a></td>
                     </tr>
                 <?php endforeach; ?>

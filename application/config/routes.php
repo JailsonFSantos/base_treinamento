@@ -53,5 +53,6 @@ $route['default_controller'] = 'login';
 $route['404_override'] = '';
 $route['translate_uri_dashes'] = FALSE;
 $route['loja/vendas/detalhes/(:num)'] = 'loja/vendasDetalhadas/$1';
+$route['cliente/pedidos/detalhes/(:num)'] = 'cliente/vendasDetalhadas/$1';
 
 

@@ -16,7 +16,8 @@
                         <td><?= htmlspecialchars($venda['id_venda']); ?></td>
                         <td><?= date('d/m/Y H:i', strtotime($venda['data_venda'])); ?></td>
                         <td>R$ <?= number_format($venda['total'], 2, ',', '.'); ?></td>
-                <?php endforeach; ?>
+                        <td><a href="<?= base_url('cliente/pedidos/detalhes/' . $venda['id_venda']) ?>" class="btn btn-default">Detalhes</a></td>
+                    <?php endforeach; ?>
             </tbody>
         </table>
     <?php else: ?>

@@ -50,18 +50,54 @@ class Pedido_model extends CI_Model
 
 
     // Obtém os detalhes de um pedido específico
-    public function get_detalhes_pedido($id_venda, $id_usuario)
+    public function get_detalhes_pedido($id_venda, $id_usuario, $is_loja = false)
     {
-        $this->db->select('produto.nome, produto.preco, carrinho_item.quantidade, (produto.preco * carrinho_item.quantidade) as subtotal');
+        $this->db->select('produto.nome AS nome_produto, carrinho_item.quantidade, carrinho_item.preco_unitario, 
+        (carrinho_item.preco_unitario * carrinho_item.quantidade) AS total_item');
         $this->db->from('venda');
         $this->db->join('carrinho', 'venda.id_carrinho = carrinho.id_carrinho');
         $this->db->join('carrinho_item', 'carrinho.id_carrinho = carrinho_item.id_carrinho');
         $this->db->join('produto', 'carrinho_item.id_produto = produto.id_produto');
-        $this->db->where('venda.id_venda', $id_venda);
-        $this->db->where('carrinho.id_usuario', $id_usuario);
+
+        // Se não for loja, filtra pelos pedidos do cliente
+        if (!$is_loja) {
+            $this->db->where('carrinho.id_usuario', $id_usuario);
+        }
+
+        if ($id_venda) {
+            $this->db->where('venda.id_venda', $id_venda); // Caso tenha ID de venda
+        }
 
         return $this->db->get()->result_array();
     }
+
+
+    public function get_vendas_com_lucro($data_inicio = NULL, $data_fim = NULL)
+    {
+        $this->db->select('
+        venda.id_venda, 
+        venda.data_venda, 
+        SUM(carrinho_item.quantidade * (carrinho_item.preco_unitario - produto.custo)) as lucro_total,
+        SUM(carrinho_item.quantidade * carrinho_item.preco_unitario) as total
+    ');
+        $this->db->from('venda');
+        $this->db->join('carrinho', 'venda.id_carrinho = carrinho.id_carrinho');
+        $this->db->join('carrinho_item', 'carrinho.id_carrinho = carrinho_item.id_carrinho');
+        $this->db->join('produto', 'carrinho_item.id_produto = produto.id_produto');
+
+        // No banco está formato DateTime
+        if (!empty($data_inicio)) {
+            $this->db->where('venda.data_venda >=', date('Y-m-d 00:00:00', strtotime($data_inicio)));
+        }
+        if (!empty($data_fim)) {
+            $this->db->where('venda.data_venda <=', date('Y-m-d 23:59:59', strtotime($data_fim)));
+        }
+
+        $this->db->group_by('venda.id_venda');
+        return $this->db->get()->result_array();
+    }
+
+
 
 
 

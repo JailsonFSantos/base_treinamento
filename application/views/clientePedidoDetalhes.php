@@ -26,5 +26,5 @@
         <p>Nenhuma venda encontrada.</p>
     <?php endif; ?>
 
-    <a href="<?= base_url('loja/vendas') ?>" class="btn btn-default">Voltar</a>
+    <a href="<?= base_url('cliente/pedidos') ?>" class="btn btn-default">Voltar</a>
 </div>
