@@ -146,7 +146,7 @@ class Cliente extends CI_Controller
 			return;
 		}
 
-		$id_usuario = $this->session->userdata('id_usuario'); // Obtém o ID do usuário logado
+		$id_usuario = $this->session->userdata('id_usuario');
 		$id_cupom = NULL;
 
 		// Criar um novo carrinho para a nova compra
@@ -207,7 +207,6 @@ class Cliente extends CI_Controller
 			return;
 		}
 
-		// Carrega o model e obtém os pedidos do usuário
 		$this->load->model('pedido_model');
 		$data['pedidos'] = $this->pedido_model->get_pedidos_por_cliente($id_usuario);
 

@@ -21,11 +21,33 @@ class Pedido_model extends CI_Model
         $this->db->join('carrinho', 'venda.id_carrinho = carrinho.id_carrinho');
         $this->db->join('carrinho_item', 'carrinho.id_carrinho = carrinho_item.id_carrinho');
         $this->db->where('carrinho.id_usuario', $id_usuario);
-        $this->db->group_by('venda.id_venda'); // Agrupar por id_venda
+        $this->db->group_by('venda.id_venda');
         $this->db->order_by('venda.data_venda', 'DESC');
 
         return  $this->db->get()->result_array();
     }
+
+    public function get_vendas_loja($data_inicio = null, $data_fim = null)
+    {
+        $this->db->select('venda.id_venda, venda.data_venda, SUM(produto.preco * carrinho_item.quantidade) as total');
+        $this->db->from('venda');
+        $this->db->join('carrinho', 'venda.id_carrinho = carrinho.id_carrinho');
+        $this->db->join('carrinho_item', 'carrinho.id_carrinho = carrinho_item.id_carrinho');
+        $this->db->join('produto', 'carrinho_item.id_produto = produto.id_produto');
+
+        if (!empty($data_inicio)) {
+            $this->db->where('venda.data_venda >=', date('Y-m-d 00:00:00', strtotime($data_inicio)));
+        }
+        if (!empty($data_fim)) {
+            $this->db->where('venda.data_venda <=', date('Y-m-d 23:59:59', strtotime($data_fim)));
+        }
+
+        $this->db->group_by('venda.id_venda');
+        $this->db->order_by('venda.data_venda', 'DESC');
+
+        return $this->db->get()->result_array();
+    }
+
 
     // Obtém os detalhes de um pedido específico
     public function get_detalhes_pedido($id_venda, $id_usuario)
@@ -38,8 +60,12 @@ class Pedido_model extends CI_Model
         $this->db->where('venda.id_venda', $id_venda);
         $this->db->where('carrinho.id_usuario', $id_usuario);
 
-        $this->db->get()->result_array();
+        return $this->db->get()->result_array();
     }
+
+
+
+
     public function registrar_venda($id_usuario, $id_cupom = null)
     {
 

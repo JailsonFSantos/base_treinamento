@@ -37,7 +37,7 @@
 
                 <!-- O atributo data-target e data-toggle é usado para associar elementos a um componente modal em Bootstrap, controlando sua exibição e comportamento. -->
                 <a data-toggle="modal" data-target="#modalCadastro" style="padding-bottom: 17px; display: block;">Não tem uma conta? Cadastre-se</a>
-                <button class="btn btn-lg btn-primary btn-block" onclick="abrirModalListarUsuarios()">Mostar Contas Cadastradas</button>
+                <button class="btn btn-lg btn-primary btn-block" onclick="abrirModalListarUsuarios()">Mostrar Contas Cadastradas</button>
             </div>
         </div>
     </div>
