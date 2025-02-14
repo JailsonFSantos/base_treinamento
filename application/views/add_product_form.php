@@ -60,10 +60,10 @@
             let lucro = preco - custo;
 
             lucroDisplay.textContent = `R$ ${lucro.toFixed(2).replace('.', ',')}`;
-            lucroDisplay.style.color = lucro >= 0 ? "green" : "red";
+            lucroDisplay.style.color = lucro > 0 ? "green" : "red";
 
             
-            if (custo > preco) {
+            if (custo >= preco) {
                 salvarBtn.disabled = true;
             } else {
                 salvarBtn.disabled = false;
@@ -78,7 +78,7 @@
             let preco = parseFloat(precoInput.value) || 0;
             let custo = parseFloat(custoInput.value) || 0;
 
-            if (custo > preco) {
+            if (custo >= preco) {
                 event.preventDefault();
                 alert("Erro: O custo do produto não pode ser maior que o preço de venda!");
             }

@@ -7,8 +7,8 @@ class Loja extends CI_Controller
 	{
 		parent::__construct();
 		$this->load->model('Produto_model');
-		$this->load->library('template'); // Carrega a biblioteca Template
-		$this->load->model('Pedido_model'); // Certifique-se de carregar o model correto
+		$this->load->library('template');
+		$this->load->model('Pedido_model');
 	}
 
 
@@ -17,7 +17,7 @@ class Loja extends CI_Controller
 		$id_usuario = $this->session->userdata('id_usuario');
 		$data['produtos'] = $this->Produto_model->get_all_products_by_loja($id_usuario);
 		$data['tipo_acesso'] = $this->session->userdata('tipo_acesso');
-		$data['homeUrl'] = '/';
+		$data['homeUrl'] = '/loja';
 		$data['nome_usuario'] = $this->session->userdata('nome_usuario');
 
 		$data['conteudo'] = $this->load->view('lojaPaginaPrincipal', $data, TRUE);
