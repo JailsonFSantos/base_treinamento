@@ -1,5 +1,6 @@
 <?php
 
+
 class Loja extends CI_Controller
 {
 	public function __construct()
@@ -143,5 +144,47 @@ class Loja extends CI_Controller
 		}
 
 		$this->template->load('lojaPedidosDetalhes', $data);
+	}
+	public function gerarRelatorio()
+	{
+		require_once FCPATH . 'vendor/autoload.php'; 
+
+		$data_inicio = $this->input->get('data_inicio');
+		$data_fim = $this->input->get('data_fim');
+
+		$this->load->model('pedido_model');
+
+		$data['pedidos'] = $this->pedido_model->get_vendas_com_lucro($data_inicio, $data_fim);
+
+
+		$mpdf = new \Mpdf\Mpdf();
+
+		$html = '<h2>Relatório de Vendas</h2>';
+		$html .= '<table border="1" width="100%" cellpadding="5">
+                <thead>
+                    <tr>
+                        <th>Número do Pedido</th>
+                        <th>Data</th>
+                        <th>Valor</th>
+                        <th>Lucro</th>
+                    </tr>
+                </thead>
+                <tbody>';
+
+		foreach ($data['pedidos'] as $venda) {
+			$lucro = $venda['lucro_total'];
+
+			$html .= '<tr>
+                    <td>' . htmlspecialchars($venda['id_venda']) . '</td>
+                    <td>' . date('d/m/Y H:i', strtotime($venda['data_venda'])) . '</td>
+                    <td>R$ ' . number_format($venda['total'], 2, ',', '.') . '</td>
+                    <td>R$ ' . number_format($lucro, 2, ',', '.') . '</td>
+                  </tr>';
+		}
+
+		$html .= '</tbody></table>';
+
+		$mpdf->WriteHTML($html);
+		$mpdf->Output('relatorio_vendas.pdf', 'D');
 	}
 }

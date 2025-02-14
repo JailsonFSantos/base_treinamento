@@ -11,7 +11,9 @@
             <input type="date" id="data_fim" name="data_fim" class="form-control" value="<?= isset($_GET['data_fim']) ? $_GET['data_fim'] : '' ?>">
         </div>
         <button type="submit" class="btn btn-primary">Filtrar</button>
+        <a href="<?= base_url('loja/gerarRelatorio') . '?data_inicio=' . (isset($_GET['data_inicio']) ? $_GET['data_inicio'] : '') . '&data_fim=' . (isset($_GET['data_fim']) ? $_GET['data_fim'] : '') ?>" class="btn btn-danger">Gerar Relatório</a>
     </form>
+
 
     <hr>
 
@@ -22,7 +24,7 @@
                     <th>Número do Pedido</th>
                     <th>Data</th>
                     <th>Valor</th>
-                    <th>Lucro</th> <!-- Coluna para o lucro -->
+                    <th>Lucro</th>
                 </tr>
             </thead>
             <tbody>
@@ -31,7 +33,7 @@
                         <td><?= htmlspecialchars($venda['id_venda']); ?></td>
                         <td><?= date('d/m/Y H:i', strtotime($venda['data_venda'])); ?></td>
                         <td>R$ <?= number_format($venda['total'], 2, ',', '.'); ?></td>
-                        <td>R$ <?= number_format($venda['lucro_total'], 2, ',', '.'); ?></td> 
+                        <td>R$ <?= number_format($venda['lucro_total'], 2, ',', '.'); ?></td>
                         <td><a href="<?= base_url('loja/vendas/detalhes/' . $venda['id_venda']) ?>" class="btn btn-default">Detalhes</a></td>
                     </tr>
                 <?php endforeach; ?>
