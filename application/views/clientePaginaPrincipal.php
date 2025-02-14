@@ -26,6 +26,7 @@
                                 </div>
                                 <input type="hidden" name="id_produto" value="<?= (int) $produto->id_produto; ?>">
                                 <button type="button" class="btn btn-primary btn-block add-to-cart" data-id="<?= (int) $produto->id_produto; ?>">Adicionar ao Carrinho</button>
+                                <button type="button" class="btn btn-primary btn-block comprar-agora" data-id="<?= (int) $produto->id_produto; ?>">Comprar</button>
                             </div>
                         </div>
                     </div>
@@ -37,42 +38,68 @@
     <?php endif; ?>
 </div>
 
-
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
-$(document).ready(function () {
-    $(document).on('click', '.add-to-cart', function () {
-        var id_produto = $(this).data('id');  
-        var quantidade = $('#quantidade_' + id_produto).val(); 
+    $(document).ready(function() {
+        $(document).on('click', '.add-to-cart', function() {
+            var id_produto = $(this).data('id');
+            var quantidade = $('#quantidade_' + id_produto).val();
 
-        if (!id_produto || !quantidade) {
-            alert("ID do produto ou quantidade ausente!");
-            return;  
-        }
-
-        $.ajax({
-            url: 'cliente/comprar_produto',  
-            type: 'POST',
-            data: { id_produto: id_produto, quantidade: quantidade },
-            dataType: 'json',
-            success: function (response) {
-                if (response.success) {
-                    $('#quantidade_carrinho').text(response.cart_count); // Atualiza o ícone do carrinho
-                    
-                    alert(response.message); 
-                } else {
-                    alert(response.message); 
-                }
-            },
-
-
-
-
-
-            error: function () {
-                alert('Erro ao adicionar produto ao carrinho!');
+            if (!id_produto || !quantidade) {
+                alert("ID do produto ou quantidade ausente!");
+                return;
             }
+
+            $.ajax({
+                url: 'cliente/comprar_produto',
+                type: 'POST',
+                data: {
+                    id_produto: id_produto,
+                    quantidade: quantidade
+                },
+                dataType: 'json',
+                success: function(response) {
+                    if (response.success) {
+                        $('#quantidade_carrinho').text(response.cart_count);
+                        alert(response.message);
+                    } else {
+                        alert(response.message);
+                    }
+                },
+                error: function() {
+                    alert('Erro ao adicionar produto ao carrinho!');
+                }
+            });
+        });
+
+        $(document).on('click', '.comprar-agora', function() {
+            var id_produto = $(this).data('id');
+            var quantidade = $('#quantidade_' + id_produto).val() || 1;
+
+            if (!id_produto || quantidade <= 0) {
+                alert("Produto inválido ou quantidade incorreta!");
+                return;
+            }
+
+            $.ajax({
+                url: 'cliente/comprar_produto',
+                type: 'POST',
+                data: {
+                    id_produto: id_produto,
+                    quantidade: quantidade
+                },
+                dataType: 'json',
+                success: function(response) {
+                    if (response.success) {
+                        window.location.href = '<?= base_url("cliente/checkout"); ?>';
+                    } else {
+                        alert(response.message);
+                    }
+                },
+                error: function() {
+                    alert('Erro ao processar a compra!');
+                }
+            });
         });
     });
-});
 </script>
